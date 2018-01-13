@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Nuclear Power News</string>
+    <string name="no_internet_connection">No internet connection. Please check your internet connection by WiFi or Cellular Mobile Data.</string>
+    <string name="no_nuclearPowerNews">No Nuclear Power news found.</string>
+</resources>

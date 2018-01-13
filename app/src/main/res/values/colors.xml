@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="section1">#4A7BA7</color>
+    <color name="section2">#04B4B3</color>
+    <color name="section3">#10CAC9</color>
+    <color name="section4">#F5A623</color>
+    <color name="section5">#E75F40</color>
+    <color name="section6">#C03823</color>
+    <color name="section7">#047b00</color>
+
+    <color name="textColorNuclearDetails">#B4BAC0</color>
+    <color name="textColorNuclearTitle">#2B3D4D</color>
+
+</resources>
