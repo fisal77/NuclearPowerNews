@@ -36,6 +36,10 @@ class NuclearPowerAdapter extends ArrayAdapter<NuclearPower> {
             String currentTitle = currentNuclearPowerNews.getWebTitle();
             title.setText(currentTitle);
 
+            TextView author = (TextView) listItemView.findViewById(R.id.author);
+            String currentAuthor = currentNuclearPowerNews.getAuthor();
+            author.setText(currentAuthor);
+
             TextView section = (TextView) listItemView.findViewById(R.id.sectionName);
             String currentSection = currentNuclearPowerNews.getSectionName();
             section.setText(currentSection);

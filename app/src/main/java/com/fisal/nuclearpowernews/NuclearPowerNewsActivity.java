@@ -25,7 +25,7 @@ public class NuclearPowerNewsActivity extends AppCompatActivity
     public static final String LOG_TAG = NuclearPowerNewsActivity.class.getName();
 
     private static final String NUCLEAR_NEWS_URL =
-            "https://content.guardianapis.com/search?q=nuclear&from-date=2017-01-01&api-key=test";
+            "https://content.guardianapis.com/search?q=nuclear&show-tags=contributor&from-date=2017-01-01&api-key=test";
 
     private static final int NUCLEAR_LOADER_ID = 1;
 

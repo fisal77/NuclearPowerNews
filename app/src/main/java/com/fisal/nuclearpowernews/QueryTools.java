@@ -27,6 +27,12 @@ public final class QueryTools {
 
     private static final String LOG_TAG = QueryTools.class.getSimpleName();
 
+    /** Use to confirm from HTTP connection request is OK = 200 (this is predefined in HTTP protocol) */
+    private static final int SUCCESS_CODE = 200;
+
+    /** JSON object associated with the key called "response" */
+    public static final String RESPONSE = "response";
+
     private QueryTools(){
     }
 
@@ -98,7 +104,7 @@ public final class QueryTools {
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
 
-            if (urlConnection.getResponseCode() == 200) {
+            if (urlConnection.getResponseCode() == SUCCESS_CODE) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
@@ -157,7 +163,7 @@ public final class QueryTools {
 
             // Extract the JSON object associated with the key called "response",
             // which represent the "results" JSON array.
-            JSONObject response = baseJsonResponse.getJSONObject("response");
+            JSONObject response = baseJsonResponse.getJSONObject(RESPONSE);
 
             // Extract the JSONArray associated with the key called "results",
             // which represents a list of results (or nuclearPowers).
@@ -172,6 +178,17 @@ public final class QueryTools {
                 // Extract the value for the key called "webTitle"
                 String title = currentNuclearPowerNews.getString("webTitle");
 
+                // Extract the value author's name for the key called webTitle inside the tags array
+                // and assign "N/A" to the author name if no author.
+                JSONArray tagsArray = currentNuclearPowerNews.getJSONArray("tags");
+                String author;
+                boolean tagsArrayIsNull = tagsArray.isNull(0);
+                if (tagsArrayIsNull) {
+                    author = "N/A";
+                } else {
+                    author = tagsArray.getJSONObject(0).getString("webTitle");
+                }
+
                 // Extract the value for the key called "webPublicationDate"
                 String date = currentNuclearPowerNews.getString("webPublicationDate");
 
@@ -180,7 +197,7 @@ public final class QueryTools {
 
                 // Create a new {@link NuclearPower} object with the section, title, date
                 // and url from the JSON response.
-                NuclearPower nuclearPower = new NuclearPower(section, title, date, url);
+                NuclearPower nuclearPower = new NuclearPower(section, title, author, date, url);
                 nuclearPowers.add(nuclearPower);
             }
 
