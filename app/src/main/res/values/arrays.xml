@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="settings_order_by_labels">
+        <item>@string/settings_order_by_newest_label</item>
+        <item>@string/settings_order_by_oldest_label</item>
+    </string-array>
+
+    <string-array name="settings_order_by_values">
+        <item>@string/settings_order_by_newest_value</item>
+        <item>@string/settings_order_by_oldest_value</item>
+    </string-array>
+
+    <string-array name="settings_section_labels">
+        <item>@string/settings_all_sections_label</item>
+        <item>@string/settings_uk_news_section_label</item>
+        <item>@string/settings_environment_section_label</item>
+        <item>@string/settings_technology_section_label</item>
+        <item>@string/settings_world_news_section_label</item>
+        <item>@string/settings_books_section_label</item>
+        <item>@string/settings_business_section_label</item>
+    </string-array>
+
+    <string-array name="settings_section_values">
+        <item>@string/settings_all_sections_value</item>
+        <item>@string/settings_uk_news_section_value</item>
+        <item>@string/settings_environment_section_value</item>
+        <item>@string/settings_technology_section_value</item>
+        <item>@string/settings_world_news_section_value</item>
+        <item>@string/settings_books_section_value</item>
+        <item>@string/settings_business_section_value</item>
+    </string-array>
+
+</resources>

@@ -4,12 +4,16 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -20,12 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NuclearPowerNewsActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<NuclearPower>> {
+        implements LoaderManager.LoaderCallbacks<List<NuclearPower>>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String LOG_TAG = NuclearPowerNewsActivity.class.getName();
 
     private static final String NUCLEAR_NEWS_URL =
-            "https://content.guardianapis.com/search?q=nuclear&show-tags=contributor&from-date=2017-01-01&api-key=test";
+            "https://content.guardianapis.com/search";
 
     private static final int NUCLEAR_LOADER_ID = 1;
 
@@ -45,6 +50,12 @@ public class NuclearPowerNewsActivity extends AppCompatActivity
         ListView nuclearListView = (ListView) findViewById(R.id.list);
         mAdapter = new NuclearPowerAdapter(this, new ArrayList<NuclearPower>());
         nuclearListView.setAdapter(mAdapter);
+
+        // Obtain a reference to the SharedPreferences file for this app
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // And register to be notified of preference changes
+        // So we know when the user has adjusted the query settings
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
         // Set TextView that is displayed when the list is empty
         mEmptyTxtView = (TextView) findViewById(R.id.empty_view);
@@ -95,10 +106,57 @@ public class NuclearPowerNewsActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (key.equals(getString(R.string.settings_order_by_key)) ||
+                key.equals(getString(R.string.settings_section_key))){
+            // Clear the ListView as a new query will be kicked off
+            mAdapter.clear();
+            // Hide the empty state text view as the loading indicator will be displayed
+            mEmptyTxtView.setVisibility(View.GONE);
+            // Show the loading indicator while new data is being fetched
+            View loadingIndicator = findViewById(R.id.loading_bar);
+            loadingIndicator.setVisibility(View.VISIBLE);
+            // Restart the loader to requery the Nuclear Power news as the query settings have been updated
+            getLoaderManager().restartLoader(NUCLEAR_LOADER_ID, null, this);
+        }
+    }
+
+    @Override
+    // onCreateLoader instantiates and returns a new Loader for the given ID
     public Loader<List<NuclearPower>> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "TEST: onCreateLoader() called ...");
-        // Create new loader by identified URL.
-        return new NuclearPowerNewsLoader(this, NUCLEAR_NEWS_URL);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // getString retrieves a String value from the preferences. The second parameter is the default value for this preference.
+        String orderBy  = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default)
+        );
+
+        // getString retrieves a String value from the preferences. The second parameter is the default value for this preference.
+        String section = sharedPrefs.getString(
+                getString(R.string.settings_section_key),
+                getString(R.string.settings_section_default));
+
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(NUCLEAR_NEWS_URL);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query parameter and its value. For example, the `q=nuclear`
+        uriBuilder.appendQueryParameter("q", "nuclear");
+        if (!((section) == getString(R.string.settings_section_default))) {
+            uriBuilder.appendQueryParameter("section", section);
+        }
+        uriBuilder.appendQueryParameter("show-tags", "contributor");
+        uriBuilder.appendQueryParameter("from-date", "2017-01-01");
+        uriBuilder.appendQueryParameter("api-key", "test");
+        uriBuilder.appendQueryParameter("order-by", orderBy);
+
+        // Return the completed uri https://content.guardianapis.com/search?q=nuclear&section=environment&show-tags=contributor&from-date=2017-01-01&api-key=test&order-by=oldest
+        return new NuclearPowerNewsLoader(this, uriBuilder.toString());
     }
 
     @Override
@@ -128,5 +186,21 @@ public class NuclearPowerNewsActivity extends AppCompatActivity
 
         // Loader reset, so we can clear out our existing data.
         mAdapter.clear();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
